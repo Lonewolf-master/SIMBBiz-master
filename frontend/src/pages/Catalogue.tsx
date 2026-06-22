@@ -1,12 +1,23 @@
 import { useState, useEffect } from 'react';
 import { api } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
-import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, X, Image as ImageIcon } from 'lucide-react';
 
 export default function Catalogue() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    price: '',
+    description: '',
+    image_url: ''
+  });
 
   const { activeStore } = useAuth();
 
@@ -27,6 +38,35 @@ export default function Catalogue() {
     }
   };
 
+  const handleAddProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeStore) return;
+    setError('');
+    setSaving(true);
+
+    try {
+      const payload = {
+        name: formData.name,
+        price: parseFloat(formData.price),
+        description: formData.description,
+        image_url: formData.image_url,
+        in_stock: true
+      };
+
+      const res = await api.post(`/businesses/${activeStore._id}/catalogue`, payload);
+      
+      if (res.success) {
+        setIsModalOpen(false);
+        setFormData({ name: '', price: '', description: '', image_url: '' });
+        await fetchProducts(); // Refresh list instantly
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to add product');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
@@ -42,7 +82,10 @@ export default function Catalogue() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition flex items-center gap-2">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="bg-teal-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition flex items-center gap-2 shadow-sm"
+        >
           <Plus size={20} /> Add Product
         </button>
       </div>
@@ -62,14 +105,14 @@ export default function Catalogue() {
               {loading ? (
                 <tr><td colSpan={4} className="px-6 py-8 text-center text-slate-500">Loading catalogue...</td></tr>
               ) : filteredProducts.length === 0 ? (
-                <tr><td colSpan={4} className="px-6 py-8 text-center text-slate-500">No products found.</td></tr>
+                <tr><td colSpan={4} className="px-6 py-8 text-center text-slate-500">No products found. Add your first product to get started!</td></tr>
               ) : (
                 filteredProducts.map((product: any) => (
                   <tr key={product._id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 flex-shrink-0">
-                          {product.image_url ? <img src={product.image_url} alt="" className="w-full h-full object-cover rounded-lg"/> : <Plus size={24}/>}
+                        <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 flex-shrink-0 overflow-hidden border border-slate-200">
+                          {product.image_url ? <img src={product.image_url} alt="" className="w-full h-full object-cover"/> : <ImageIcon size={20}/>}
                         </div>
                         <div>
                           <p className="font-medium text-slate-800">{product.name}</p>
@@ -98,6 +141,88 @@ export default function Catalogue() {
           </table>
         </div>
       </div>
+
+      {/* Add Product Modal Overlay */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-slate-800">Add New Product</h3>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 transition p-1 rounded-full hover:bg-slate-100"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleAddProduct} className="p-6 overflow-y-auto flex-1 space-y-4">
+              {error && <div className="bg-rose-50 text-rose-600 p-3 rounded-lg text-sm">{error}</div>}
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Product Name *</label>
+                <input 
+                  type="text" required
+                  value={formData.name}
+                  onChange={e => setFormData({...formData, name: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+                  placeholder="E.g. Premium Coffee Beans"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Price ($) *</label>
+                <input 
+                  type="number" required min="0" step="0.01"
+                  value={formData.price}
+                  onChange={e => setFormData({...formData, price: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Description (Optional)</label>
+                <textarea 
+                  rows={3}
+                  value={formData.description}
+                  onChange={e => setFormData({...formData, description: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm resize-none"
+                  placeholder="Describe your product..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Image URL (Optional)</label>
+                <input 
+                  type="url"
+                  value={formData.image_url}
+                  onChange={e => setFormData({...formData, image_url: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+
+              <div className="pt-4 flex gap-3 border-t border-slate-100 mt-6">
+                <button 
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="flex-1 px-4 py-2.5 border border-slate-300 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 px-4 py-2.5 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition disabled:opacity-50"
+                >
+                  {saving ? 'Saving...' : 'Save Product'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
