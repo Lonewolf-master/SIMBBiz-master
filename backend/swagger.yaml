@@ -1,0 +1,54 @@
+openapi: 3.0.0
+info:
+  title: SIMBBiz Backend API
+  version: '1.0'
+paths:
+  /api/ping:
+    get:
+      summary: Ping
+      responses:
+        '200':
+          description: OK
+  /api/items:
+    get:
+      summary: List items
+      responses:
+        '200':
+          description: Array of items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+    post:
+      summary: Create item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+
+components:
+  schemas:
+    Item:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
