@@ -4,6 +4,8 @@ const businessSchema = new mongoose.Schema({
   owner_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   slug: { type: String, required: true, unique: true, index: true },
   name: { type: String, required: true },
+  description: { type: String },
+  category: { type: String }, // e.g. Real-Estate, Fashion
   location: { type: String },
   phone: { type: String },
   lang: { type: String, default: 'en' },

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { api } from '../utils/api';
-import { ShoppingCart, Search, MapPin, Phone } from 'lucide-react';
+import { Search, MapPin, Phone } from 'lucide-react';
 
 export default function Storefront() {
   const { slug } = useParams();
@@ -15,7 +15,6 @@ export default function Storefront() {
 
   const fetchShop = async () => {
     try {
-      // Assuming a public endpoint exists: /shop/:slug
       const res = await api.get(`/shop/${slug}`);
       setShopData(res.data);
     } catch (error) {
@@ -30,17 +29,17 @@ export default function Storefront() {
 
   const { business, categories, uncategorised } = shopData;
 
-  // Filter products by search term
   const filterProducts = (products: any[]) => 
     products.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
+    <div className="min-h-screen bg-slate-50 font-sans flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800">{business.name}</h1>
+            <Link to="/market" className="text-teal-600 text-sm font-medium hover:underline mb-1 inline-block">&larr; Back to Market</Link>
+            <h1 className="text-2xl font-extrabold text-slate-800 leading-tight">{business.name}</h1>
             <div className="flex items-center gap-4 text-sm text-slate-500 mt-1">
               {business.location && <span className="flex items-center gap-1"><MapPin size={14} /> {business.location}</span>}
               {business.phone && <span className="flex items-center gap-1"><Phone size={14} /> {business.phone}</span>}
@@ -57,27 +56,23 @@ export default function Storefront() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <button className="relative p-2 text-slate-600 hover:text-teal-600 hover:bg-teal-50 rounded-full transition">
-              <ShoppingCart size={24} />
-              <span className="absolute top-0 right-0 w-4 h-4 bg-teal-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
-            </button>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 py-8 space-y-12">
+      <main className="max-w-5xl mx-auto w-full px-4 py-8 space-y-12 flex-1">
         {categories?.map((cat: any) => {
           const catProducts = filterProducts(cat.products || []);
           if (catProducts.length === 0) return null;
           return (
-            <section key={cat.id}>
+            <section key={cat._id}>
               <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
                 {cat.name} <span className="text-sm font-normal text-slate-400 bg-slate-200 px-2 py-0.5 rounded-full">{catProducts.length}</span>
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {catProducts.map((product: any) => (
-                  <ProductCard key={product.id} product={product} businessPhone={business.phone} />
+                  <ProductCard key={product._id} product={product} business={business} />
                 ))}
               </div>
             </section>
@@ -89,34 +84,33 @@ export default function Storefront() {
             <h2 className="text-xl font-bold text-slate-800 mb-6">Other Items</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {filterProducts(uncategorised).map((product: any) => (
-                <ProductCard key={product.id} product={product} businessPhone={business.phone} />
+                <ProductCard key={product._id} product={product} business={business} />
               ))}
             </div>
           </section>
         )}
       </main>
 
-      <footer className="bg-slate-900 text-slate-400 py-8 text-center text-sm">
-        <p>Powered by <span className="text-teal-400 font-bold tracking-tight">SIMBBiz</span></p>
+      <footer className="bg-slate-900 text-slate-400 py-8 text-center text-sm border-t border-slate-800">
+        <p>Powered by <Link to="/" className="text-teal-400 font-bold tracking-tight hover:underline">SIMBBiz</Link></p>
       </footer>
     </div>
   );
 }
 
-function ProductCard({ product, businessPhone }: any) {
+function ProductCard({ product, business }: any) {
   const handleOrder = () => {
-    // Generate WhatsApp link
     const text = encodeURIComponent(`Hi, I would like to order: ${product.name} - $${product.price}`);
-    window.open(`https://wa.me/${businessPhone.replace(/\D/g, '')}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${business.phone.replace(/\D/g, '')}?text=${text}`, '_blank');
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow group flex flex-col">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md hover:border-teal-200 transition-all group flex flex-col">
       <div className="aspect-square bg-slate-100 relative overflow-hidden">
         {product.image_url ? (
           <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-300 font-medium">No Image</div>
+          <div className="w-full h-full flex items-center justify-center text-slate-300 font-medium text-sm">No Image</div>
         )}
       </div>
       <div className="p-4 flex-1 flex flex-col">
@@ -126,7 +120,7 @@ function ProductCard({ product, businessPhone }: any) {
           <span className="font-bold text-teal-600">${product.price}</span>
           <button 
             onClick={handleOrder}
-            className="text-xs font-semibold bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition"
+            className="text-sm font-semibold bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-teal-600 transition flex items-center gap-1"
           >
             Order
           </button>

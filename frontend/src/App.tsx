@@ -14,6 +14,7 @@ import Customers from './pages/Customers';
 import Reports from './pages/Reports';
 import Storefront from './pages/Storefront';
 import AdminDashboard from './pages/AdminDashboard';
+import Market from './pages/Market';
 
 // Protected Route Wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/market" element={<Market />} />
           
           {/* User Account Route (No store needed yet) */}
           <Route path="/create-store" element={<UserRoute><CreateStore /></UserRoute>} />

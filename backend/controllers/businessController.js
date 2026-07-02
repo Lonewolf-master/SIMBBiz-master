@@ -3,13 +3,15 @@ const Business = require('../models/Business');
 // Create a new business for the logged-in user
 exports.createBusiness = async (req, res) => {
   try {
-    const { name, location, phone, lang } = req.body;
+    const { name, location, phone, lang, category, description } = req.body;
     if (!name) return res.status(400).json({ success: false, error: 'name is required' });
     
     // Auto-generate slug handled by mongoose pre-validate hook
     const business = new Business({ 
       owner_id: req.user._id,
-      name, 
+      name,
+      description,
+      category, 
       location, 
       phone, 
       lang: lang || 'en' 

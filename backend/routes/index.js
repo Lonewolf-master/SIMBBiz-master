@@ -71,6 +71,8 @@ router.get('/businesses/:id/daily-costs', protect, authorizeBusinessOwner, costC
 router.post('/businesses/:id/daily-costs', protect, authorizeBusinessOwner, costController.upsertDate);
 
 // --- SHOP (PUBLIC) ---
+router.get('/shop', shopController.getAllStores);
+router.get('/shop/discover', shopController.getDiscoveryData);
 router.get('/shop/:slug', shopController.getStorefront);
 
 module.exports = router;

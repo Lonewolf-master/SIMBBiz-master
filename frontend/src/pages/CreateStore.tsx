@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { Store, MapPin, Phone } from 'lucide-react';
 
 export default function CreateStore() {
-  const [formData, setFormData] = useState({ name: '', location: '', phone: '' });
+  const [formData, setFormData] = useState({ name: '', location: '', phone: '', category: '', description: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ export default function CreateStore() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -70,6 +70,34 @@ export default function CreateStore() {
                   Your public URL will be: simbbiz.com/shop/{previewSlug}
                 </p>
               )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Category</label>
+              <div className="mt-1">
+                <select name="category" required value={formData.category} onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm bg-white"
+                >
+                  <option value="" disabled>Select a category</option>
+                  <option value="Real-Estate">Real-Estate</option>
+                  <option value="Fashion & Apparel">Fashion & Apparel</option>
+                  <option value="Electronics & Tech">Electronics & Tech</option>
+                  <option value="Food & Beverages">Food & Beverages</option>
+                  <option value="Health & Beauty">Health & Beauty</option>
+                  <option value="Services">Services</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Description</label>
+              <div className="mt-1">
+                <textarea name="description" rows={3} value={formData.description} onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm resize-none"
+                  placeholder="Tell customers what your store is about..."
+                />
+              </div>
             </div>
 
             <div>

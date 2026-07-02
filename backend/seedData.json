@@ -1,0 +1,132 @@
+{
+  "businesses": [
+    {
+      "name": "Global Electronics",
+      "slug": "global-electronics",
+      "category": "Electronics & Tech",
+      "description": "Your one-stop shop for the latest gadgets, laptops, smartphones, and accessories.",
+      "location": "New York, USA",
+      "phone": "+15551234567"
+    },
+    {
+      "name": "Fashion Forward",
+      "slug": "fashion-forward",
+      "category": "Fashion & Apparel",
+      "description": "Trendy and affordable clothing for men and women.",
+      "location": "Los Angeles, USA",
+      "phone": "+15559876543"
+    },
+    {
+      "name": "Home Essentials",
+      "slug": "home-essentials",
+      "category": "Home & Garden",
+      "description": "Everything you need to make your house a home. Furniture, decor, and more.",
+      "location": "Chicago, USA",
+      "phone": "+15555555555"
+    }
+  ],
+  "products": {
+    "global-electronics": [
+      {
+        "name": "Smartphone Pro Max 256GB",
+        "description": "The latest flagship smartphone with incredible camera capabilities.",
+        "price": 1099.99,
+        "image_url": "https://images.unsplash.com/photo-1598327105666-5b89351cb315?w=600&auto=format&fit=crop&q=60",
+        "in_stock": true,
+        "discount": 10
+      },
+      {
+        "name": "Wireless Noise-Canceling Headphones",
+        "description": "Immersive sound experience with active noise cancellation.",
+        "price": 299.99,
+        "image_url": "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=600&auto=format&fit=crop&q=60",
+        "in_stock": true,
+        "discount": 0
+      },
+      {
+        "name": "4K Ultra HD Smart TV - 65\"",
+        "description": "Stunning picture quality with built-in streaming apps.",
+        "price": 799.00,
+        "image_url": "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&auto=format&fit=crop&q=60",
+        "in_stock": true,
+        "discount": 15
+      },
+      {
+        "name": "Gaming Laptop Pro 16GB RAM",
+        "description": "High-performance gaming laptop with dedicated graphics.",
+        "price": 1499.50,
+        "image_url": "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=600&auto=format&fit=crop&q=60",
+        "in_stock": true,
+        "discount": 5
+      }
+    ],
+    "fashion-forward": [
+      {
+        "name": "Men's Classic Denim Jacket",
+        "description": "Timeless denim jacket perfect for layering.",
+        "price": 59.99,
+        "image_url": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&auto=format&fit=crop&q=60",
+        "in_stock": true,
+        "discount": 20
+      },
+      {
+        "name": "Women's Floral Summer Dress",
+        "description": "Light and breezy dress for warm days.",
+        "price": 45.00,
+        "image_url": "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600&auto=format&fit=crop&q=60",
+        "in_stock": true,
+        "discount": 0
+      },
+      {
+        "name": "Unisex Canvas Sneakers",
+        "description": "Comfortable everyday sneakers available in multiple colors.",
+        "price": 35.50,
+        "image_url": "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&auto=format&fit=crop&q=60",
+        "in_stock": true,
+        "discount": 10
+      },
+      {
+        "name": "Leather Crossbody Bag",
+        "description": "Elegant and compact leather bag for essentials.",
+        "price": 89.99,
+        "image_url": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop&q=60",
+        "in_stock": true,
+        "discount": 0
+      }
+    ],
+    "home-essentials": [
+      {
+        "name": "Modern Velvet Sofa",
+        "description": "Luxurious 3-seater sofa with gold-finished legs.",
+        "price": 899.00,
+        "image_url": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&auto=format&fit=crop&q=60",
+        "in_stock": true,
+        "discount": 25
+      },
+      {
+        "name": "Ceramic Coffee Mug Set (4)",
+        "description": "Handcrafted ceramic mugs perfect for your morning brew.",
+        "price": 24.99,
+        "image_url": "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=600&auto=format&fit=crop&q=60",
+        "in_stock": true,
+        "discount": 0
+      },
+      {
+        "name": "Geometric Area Rug (5x7)",
+        "description": "Soft and stylish rug to tie the room together.",
+        "price": 129.50,
+        "image_url": "https://images.unsplash.com/photo-1528699636501-a20a48b94cc6?w=600&auto=format&fit=crop&q=60",
+        "in_stock": true,
+        "discount": 15
+      },
+      {
+        "name": "Adjustable Standing Desk",
+        "description": "Ergonomic desk for a healthier workspace.",
+        "price": 349.00,
+        "image_url": "https://images.unsplash.com/photo-1595514535311-66c3c5c56c20?w=600&auto=format&fit=crop&q=60",
+        "in_stock": true,
+        "discount": 5
+      }
+    ]
+  }
+}

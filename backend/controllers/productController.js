@@ -26,10 +26,10 @@ exports.getSingle = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const { category_id, name, description, price, image_url, in_stock, stock_qty } = req.body;
+    const { category_id, name, description, price, image_url, in_stock, stock_qty, discount, min_qty, max_qty } = req.body;
     if (!name || price == null || price < 0) return res.status(400).json({ success: false, error: 'Valid name and price are required' });
     const product = new Product({
-      business_id: req.params.id, category_id: category_id || null, name, description, price, image_url, in_stock: in_stock ?? true, stock_qty
+      business_id: req.params.id, category_id: category_id || null, name, description, price, image_url, in_stock: in_stock ?? true, stock_qty, discount, min_qty, max_qty
     });
     await product.save();
     res.status(201).json({ success: true, data: product });

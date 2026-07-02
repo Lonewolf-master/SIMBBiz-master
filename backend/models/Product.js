@@ -9,6 +9,9 @@ const productSchema = new mongoose.Schema({
   image_url: { type: String },
   in_stock: { type: Boolean, default: true },
   stock_qty: { type: Number }, // null means unlimited
+  discount: { type: Number, default: 0 }, // % discount
+  min_qty: { type: Number, default: 1 },
+  max_qty: { type: Number }, // null means no max limit
   added_date: { type: Date, default: Date.now },
   views: { type: Number, default: 0 } // Incorporated from product_views table
 }, { timestamps: true });
