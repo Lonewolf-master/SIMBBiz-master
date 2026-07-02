@@ -12,6 +12,7 @@ const productSchema = new mongoose.Schema({
   discount: { type: Number, default: 0 }, // % discount
   min_qty: { type: Number, default: 1 },
   max_qty: { type: Number }, // null means no max limit
+  is_promotion: { type: Boolean, default: false },
   added_date: { type: Date, default: Date.now },
   views: { type: Number, default: 0 } // Incorporated from product_views table
 }, { timestamps: true });

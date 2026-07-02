@@ -13,7 +13,7 @@ exports.getAllStores = async (req, res) => {
 
 exports.getDiscoveryData = async (req, res) => {
   try {
-    // 1. Get random products
+    // 1. Get random products (Just for You)
     const randomProducts = await Product.aggregate([
       { $match: { in_stock: true } },
       { $sample: { size: 24 } },
@@ -27,12 +27,38 @@ exports.getDiscoveryData = async (req, res) => {
       .limit(12)
       .populate('business_id', 'name slug phone location');
 
-    // 3. Get featured stores
+    // 3. Get promotional products
+    const promoProducts = await Product.find({ in_stock: true, is_promotion: true })
+      .sort({ added_date: -1 })
+      .limit(12)
+      .populate('business_id', 'name slug phone location');
+
+    // 4. Get specific categories (we don't have normalized categories across stores, 
+    // but we know store names or categories roughly from our seed script).
+    // The seeder categorizes businesses as "Fashion", "Tech", "Real Estate", etc.
+    // So let's look up businesses by category and then their products.
+    
+    const techBusinesses = await Business.find({ category: { $regex: /tech|electronics/i } }).select('_id');
+    const techBusinessIds = techBusinesses.map(b => b._id);
+    const techProducts = await Product.find({ business_id: { $in: techBusinessIds }, in_stock: true })
+      .limit(10)
+      .populate('business_id', 'name slug phone location');
+
+    const fashionBusinesses = await Business.find({ category: { $regex: /fashion|clothing/i } }).select('_id');
+    const fashionBusinessIds = fashionBusinesses.map(b => b._id);
+    const fashionProducts = await Product.find({ business_id: { $in: fashionBusinessIds }, in_stock: true })
+      .limit(10)
+      .populate('business_id', 'name slug phone location');
+
+    // 5. Get featured stores
     const topStores = await Business.aggregate([
-      { $sample: { size: 6 } }
+      { $sample: { size: 8 } }
     ]);
 
-    res.json({ success: true, data: { randomProducts, latestProducts, topStores } });
+    res.json({ 
+      success: true, 
+      data: { randomProducts, latestProducts, promoProducts, techProducts, fashionProducts, topStores } 
+    });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

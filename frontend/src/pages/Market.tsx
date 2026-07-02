@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../utils/api';
-import { Store, MapPin, Search } from 'lucide-react';
+import { Store, MapPin, Search, ChevronRight, LayoutGrid, Zap } from 'lucide-react';
 
 export default function Market() {
   const [stores, setStores] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
     fetchStores();
@@ -23,60 +24,139 @@ export default function Market() {
     }
   };
 
-  const filteredStores = stores.filter(store => 
-    store.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    (store.location && store.location.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const categories = ['All', ...Array.from(new Set(stores.map(s => s.category).filter(Boolean)))];
+
+  const filteredStores = stores.filter(store => {
+    const matchesSearch = store.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          (store.location && store.location.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesCategory = selectedCategory === 'All' || store.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
-      <header className="bg-slate-950 text-white pt-16 pb-24 px-4 text-center">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">SIMBBiz Marketplace</h1>
-        <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-8">
-          Discover incredible local businesses, shop their exclusive products, and support the community.
-        </p>
-        
-        <div className="max-w-xl mx-auto relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-          <input 
-            type="text" 
-            placeholder="Search stores or locations..." 
-            className="w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500 text-white placeholder-slate-400 shadow-xl"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+    <div className="min-h-screen bg-slate-100 font-sans flex flex-col">
+      {/* Top Navbar */}
+      <header className="bg-slate-900 text-white sticky top-0 z-50 w-full shadow-lg">
+        <div className="w-full px-4 lg:px-8 py-4 flex items-center justify-between gap-4 md:gap-8 flex-wrap lg:flex-nowrap">
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
+            <div className="w-8 h-8 rounded bg-teal-500 flex items-center justify-center text-slate-900">
+              <Zap size={20} className="fill-current" />
+            </div>
+            <span className="text-2xl font-extrabold tracking-tight">SIMBBiz</span>
+          </Link>
+
+          <div className="order-last lg:order-none flex-1 w-full lg:max-w-3xl flex items-center bg-white rounded-lg overflow-hidden focus-within:ring-2 ring-teal-500 h-11 shadow-sm mt-3 lg:mt-0">
+            <input 
+              type="text" 
+              placeholder="Search for stores by name or location..." 
+              className="flex-1 h-full px-4 text-slate-900 focus:outline-none text-sm"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button className="bg-teal-500 hover:bg-teal-600 transition-colors h-full px-6 flex items-center justify-center text-slate-900">
+              <Search size={20} />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-6 flex-shrink-0">
+            <Link to="/" className="font-semibold text-sm hover:text-teal-400 transition">Home</Link>
+            <Link to="/signup" className="bg-teal-500 text-slate-900 px-4 py-2 rounded-lg font-bold text-sm hover:bg-teal-400 transition">Start Selling</Link>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 -mt-12 pb-24 relative z-10">
-        {loading ? (
-          <div className="bg-white rounded-2xl shadow-sm p-12 text-center text-slate-500">Loading stores...</div>
-        ) : filteredStores.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm p-12 text-center text-slate-500">No stores found matching your search.</div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredStores.map(store => (
-              <Link 
-                key={store._id} 
-                to={`/shop/${store.slug}`}
-                className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group block flex flex-col"
-              >
-                <div className="w-16 h-16 bg-gradient-to-br from-teal-400 to-indigo-500 rounded-2xl flex items-center justify-center text-white shadow-inner mb-6 group-hover:scale-110 transition-transform">
-                  <Store size={32} />
-                </div>
-                <h2 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-teal-600 transition-colors">{store.name}</h2>
-                <div className="flex items-center gap-2 text-slate-500 text-sm mt-auto">
-                  <MapPin size={16} />
-                  <span>{store.location || 'Online Store'}</span>
-                </div>
-              </Link>
-            ))}
+      {/* Main Content */}
+      <main className="flex-1 w-full px-4 lg:px-8 py-8 flex gap-8">
+        
+        {/* Sidebar Filters */}
+        <aside className="w-64 flex-shrink-0 hidden md:block">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sticky top-28">
+            <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2 pb-3 border-b border-slate-100">
+              <LayoutGrid size={18} className="text-teal-600"/> Categories
+            </h3>
+            <ul className="space-y-1">
+              {categories.map((cat, i) => (
+                <li key={i}>
+                  <button 
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`w-full text-left text-sm px-3 py-2.5 rounded-lg transition-colors flex items-center justify-between ${
+                      selectedCategory === cat ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-teal-600'
+                    }`}
+                  >
+                    {cat}
+                    {selectedCategory === cat && <ChevronRight size={14} />}
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
-        )}
+        </aside>
+
+        {/* Store Grid */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <div className="mb-6 flex items-end justify-between">
+            <div>
+              <h1 className="text-3xl font-black text-slate-900">All Stores</h1>
+              <p className="text-slate-500 mt-1">Discover {filteredStores.length} premium independent sellers.</p>
+            </div>
+          </div>
+
+          {loading ? (
+             <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
+               <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+               <p className="text-lg">Loading stores...</p>
+             </div>
+          ) : filteredStores.length === 0 ? (
+             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center flex flex-col items-center">
+               <Store size={48} className="text-slate-300 mb-4" />
+               <h3 className="text-xl font-bold text-slate-800 mb-2">No stores found</h3>
+               <p className="text-slate-500">Try adjusting your search or category filter.</p>
+             </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pb-20">
+              {filteredStores.map(store => (
+                <Link 
+                  key={store._id} 
+                  to={`/shop/${store.slug}`}
+                  className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-xl hover:-translate-y-1 hover:border-teal-300 transition-all duration-300 group flex flex-col h-full"
+                >
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="w-16 h-16 bg-slate-100 group-hover:bg-teal-50 transition-colors rounded-xl flex items-center justify-center text-slate-400 flex-shrink-0">
+                      <Store size={32} className="group-hover:text-teal-500 transition-colors" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-bold text-slate-900 group-hover:text-teal-600 transition-colors leading-tight line-clamp-2">{store.name}</h2>
+                      {store.category && (
+                        <span className="inline-block mt-1.5 text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-bold uppercase tracking-wide">
+                          {store.category}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-slate-500 line-clamp-3 mb-6 flex-1">
+                    {store.description || 'Welcome to our store! Browse our selection of premium products.'}
+                  </p>
+                  
+                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between mt-auto">
+                    <div className="flex items-center gap-1.5 text-slate-400 text-xs font-medium truncate pr-4">
+                      <MapPin size={12} className="flex-shrink-0" />
+                      <span className="truncate">{store.location || 'Online'}</span>
+                    </div>
+                    <span className="text-xs font-bold text-teal-600 flex items-center gap-1 flex-shrink-0">
+                      Visit Store <ChevronRight size={12} />
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       </main>
 
-      <footer className="bg-slate-900 text-slate-400 py-8 text-center text-sm border-t border-slate-800">
-        <p>Powered by <span className="text-teal-400 font-bold tracking-tight">SIMBBiz</span></p>
+      {/* Footer */}
+      <footer className="bg-slate-900 text-slate-400 py-8 text-center text-sm mt-auto">
+        <p>© 2026 SIMBBiz Marketplace. Built for scale.</p>
       </footer>
     </div>
   );

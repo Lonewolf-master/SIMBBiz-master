@@ -30,6 +30,7 @@ router.get('/admin/stats', protect, authorizeAdmin, adminController.getPlatformS
 
 // --- BUSINESSES ---
 router.get('/businesses/:slug', businessController.getBySlug);
+router.get('/businesses/:id/stats', protect, authorizeBusinessOwner, businessController.getStats);
 router.patch('/businesses/:id', protect, authorizeBusinessOwner, businessController.updateProfile);
 router.patch('/businesses/:id/pin', protect, authorizeBusinessOwner, businessController.updatePin);
 router.post('/businesses/:id/verify-pin', protect, authorizeBusinessOwner, businessController.verifyPin);

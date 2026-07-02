@@ -81,3 +81,39 @@ exports.verifyPin = async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 };
+
+const Product = require('../models/Product');
+const Sale = require('../models/Sale');
+const Customer = require('../models/Customer');
+
+exports.getStats = async (req, res) => {
+  try {
+    const businessId = req.params.id;
+    
+    const [totalProducts, promoProducts, salesCount, customerCount] = await Promise.all([
+      Product.countDocuments({ business_id: businessId }),
+      Product.countDocuments({ business_id: businessId, is_promotion: true }),
+      Sale.countDocuments({ business_id: businessId }),
+      Customer.countDocuments({ business_id: businessId })
+    ]);
+
+    // Aggregate total revenue from Sales
+    const sales = await Sale.aggregate([
+      { $match: { business_id: new require('mongoose').Types.ObjectId(businessId) } },
+      { $group: { _id: null, total: { $sum: "$total_amount" }, credit: { $sum: "$credit_amount" } } }
+    ]);
+
+    const stats = {
+      total_products: totalProducts,
+      promo_products: promoProducts,
+      sale_count: salesCount,
+      customer_count: customerCount,
+      total_revenue: sales.length ? sales[0].total : 0,
+      total_credit: sales.length ? sales[0].credit : 0,
+    };
+
+    res.json({ success: true, data: stats });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};

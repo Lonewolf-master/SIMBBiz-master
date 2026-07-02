@@ -1,26 +1,14 @@
 version: '3.8'
 services:
-  mongo:
-    image: mongo:6
-    restart: unless-stopped
-    volumes:
-      - mongo-data:/data/db
-    ports:
-      - "27017:27017"
-
   backend:
     build: ./backend
     restart: unless-stopped
-    environment:
-      - MONGODB_URI=mongodb://mongo:27017/simbbiz
-      - PORT=4000
-      - JWT_SECRET=fallback_secret_key_for_dev_simbbiz
-      - JWT_EXPIRE=30d
-      - JWT_COOKIE_EXPIRE=30
+    env_file:
+      - ./backend/.env
     ports:
       - "4000:4000"
-    depends_on:
-      - mongo
+    # Docker containers automatically have outbound internet access by default,
+    # so they can natively connect to your MongoDB Atlas cluster.
 
   frontend:
     build: ./frontend
@@ -29,7 +17,3 @@ services:
       - "80:80"
     depends_on:
       - backend
-
-volumes:
-  mongo-data:
-    driver: local

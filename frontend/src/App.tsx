@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout';
 
 // Pages
@@ -15,6 +16,7 @@ import Reports from './pages/Reports';
 import Storefront from './pages/Storefront';
 import AdminDashboard from './pages/AdminDashboard';
 import Market from './pages/Market';
+import Settings from './pages/Settings';
 
 // Protected Route Wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -45,8 +47,9 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
         <Routes>
           {/* Public Marketing/Auth Routes */}
           <Route path="/" element={<Home />} />
@@ -67,13 +70,14 @@ export default function App() {
             <Route path="sales" element={<Sales />} />
             <Route path="customers" element={<Customers />} />
             <Route path="reports" element={<Reports />} />
-            <Route path="settings" element={<div className="text-slate-600">Business Settings goes here...</div>} />
+            <Route path="settings" element={<Settings />} />
           </Route>
           
           {/* Public Storefront Route */}
           <Route path="/shop/:slug" element={<Storefront />} />
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

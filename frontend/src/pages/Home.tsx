@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, MapPin, Store, ExternalLink, Menu, TrendingUp, Tag, ChevronRight, Zap } from 'lucide-react';
+import { Search, MapPin, Store, Menu, TrendingUp, Tag, ChevronRight, Zap, Moon, Sun, Smartphone, ShoppingBag } from 'lucide-react';
 import { api } from '../utils/api';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Home() {
-  const [data, setData] = useState<any>({ randomProducts: [], latestProducts: [], topStores: [] });
+  const [data, setData] = useState<any>({ randomProducts: [], latestProducts: [], topStores: [], promoProducts: [], techProducts: [], fashionProducts: [] });
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchFilter, setSearchFilter] = useState('All');
+  const [activeSlide, setActiveSlide] = useState(0);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,24 +26,52 @@ export default function Home() {
     fetchData();
   }, []);
 
+  const slides = [
+    {
+      title: "Discover Premium Stores",
+      desc: "Shop directly from independent sellers worldwide.",
+      img: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600&auto=format&fit=crop&q=80",
+      tag: "MEGA SALE"
+    },
+    {
+      title: "Real Estate & Luxury",
+      desc: "Find your dream home with top realtors.",
+      img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&auto=format&fit=crop&q=80",
+      tag: "NEW LISTINGS"
+    },
+    {
+      title: "Tech Gadgets Galore",
+      desc: "Upgrade your lifestyle with next-gen technology.",
+      img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=1600&auto=format&fit=crop&q=80",
+      tag: "TECH WEEK"
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
   const categories = ["Electronics & Tech", "Fashion & Apparel", "Home & Garden", "Real-Estate", "Health & Beauty", "Automotive", "Services", "Groceries"];
 
   return (
-    <div className="min-h-screen bg-slate-100 font-sans text-slate-800 flex flex-col">
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-200 flex flex-col w-full overflow-x-hidden transition-colors">
       {/* Top Navbar */}
-      <header className="bg-slate-900 text-white sticky top-0 z-50">
-        <div className="max-w-[1600px] mx-auto px-4 py-3 flex items-center justify-between gap-6">
+      <header className="bg-slate-900 dark:bg-slate-950 text-white sticky top-0 z-50 w-full border-b border-slate-800 transition-colors">
+        <div className="w-full px-2 lg:px-4 py-3 flex items-center justify-between gap-2 md:gap-4 flex-wrap lg:flex-nowrap">
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             <div className="w-8 h-8 rounded bg-teal-500 flex items-center justify-center text-slate-900">
               <Zap size={20} className="fill-current" />
             </div>
-            <span className="text-2xl font-extrabold tracking-tight">SIMBBiz</span>
+            <span className="text-2xl font-extrabold tracking-tight hidden sm:block">SIMBBiz</span>
           </Link>
 
           {/* Advanced Search Bar */}
-          <div className="flex-1 max-w-4xl flex items-center bg-white rounded-lg overflow-hidden focus-within:ring-2 ring-teal-500 h-10 shadow-sm">
+          <div className="order-last lg:order-none flex-1 w-full lg:max-w-4xl flex items-center bg-white dark:bg-slate-800 rounded-lg overflow-hidden focus-within:ring-2 ring-teal-500 h-10 shadow-sm mt-3 lg:mt-0 transition-colors">
             <select 
-              className="bg-slate-100 text-slate-700 h-full px-3 text-sm border-r border-slate-300 focus:outline-none cursor-pointer"
+              className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 h-full px-2 md:px-3 text-xs md:text-sm border-r border-slate-300 dark:border-slate-600 focus:outline-none cursor-pointer transition-colors"
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
             >
@@ -52,46 +83,55 @@ export default function Home() {
             <input 
               type="text" 
               placeholder="Search for products, brands, or stores..." 
-              className="flex-1 h-full px-4 text-slate-900 focus:outline-none"
+              className="flex-1 h-full px-3 md:px-4 text-slate-900 dark:text-slate-100 bg-transparent focus:outline-none text-sm placeholder-slate-400 dark:placeholder-slate-500"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <button className="bg-teal-500 hover:bg-teal-600 transition-colors h-full px-6 flex items-center justify-center text-slate-900">
+            <button className="bg-teal-500 hover:bg-teal-600 transition-colors h-full px-4 md:px-6 flex items-center justify-center text-slate-900">
               <Search size={20} />
             </button>
           </div>
 
-          <div className="flex items-center gap-6 flex-shrink-0">
-            <div className="hidden lg:flex flex-col text-sm">
+          <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
+            <div className="hidden xl:flex flex-col text-sm mr-2">
               <span className="text-slate-400 text-xs">Deliver to</span>
               <span className="font-bold flex items-center gap-1"><MapPin size={14}/> Worldwide</span>
             </div>
-            <Link to="/login" className="font-semibold hover:text-teal-400 transition">Login</Link>
-            <Link to="/signup" className="bg-teal-500 text-slate-900 px-4 py-2 rounded-lg font-bold hover:bg-teal-400 transition">Start Selling</Link>
+            
+            <button 
+              onClick={toggleTheme} 
+              className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+              title="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+
+            <Link to="/login" className="font-semibold text-sm md:text-base hover:text-teal-400 transition hidden sm:block">Login</Link>
+            <Link to="/signup" className="bg-teal-500 text-slate-900 px-3 md:px-4 py-2 rounded-lg font-bold text-sm md:text-base hover:bg-teal-400 transition whitespace-nowrap">Start Selling</Link>
           </div>
         </div>
         
         {/* Secondary Navbar */}
-        <div className="bg-slate-800 text-sm px-4 py-2 flex items-center gap-6 overflow-x-auto whitespace-nowrap hide-scrollbar">
+        <div className="bg-slate-800 dark:bg-slate-900 border-t border-slate-700 dark:border-slate-800 text-sm px-4 lg:px-8 py-2 flex items-center gap-6 overflow-x-auto whitespace-nowrap hide-scrollbar transition-colors">
           <button className="flex items-center gap-1 font-bold hover:text-teal-400 transition"><Menu size={16}/> All</button>
           <Link to="/market" className="font-medium hover:text-teal-400 transition">All Stores</Link>
-          <span className="font-medium hover:text-teal-400 cursor-pointer transition">Today's Deals</span>
+          <span className="font-medium hover:text-teal-400 cursor-pointer transition text-rose-400">Promotions</span>
           <span className="font-medium hover:text-teal-400 cursor-pointer transition">Customer Service</span>
           <span className="font-medium hover:text-teal-400 cursor-pointer transition">New Releases</span>
         </div>
       </header>
 
-      {/* Main Layout */}
-      <main className="flex-1 max-w-[1600px] mx-auto w-full px-4 py-6 flex gap-6">
+      {/* Main Layout - using wider layout for massive data viewing */}
+      <main className="flex-1 w-full px-2 sm:px-4 lg:px-6 py-6 flex gap-4 md:gap-6">
         
         {/* Left Sidebar (Categories) */}
-        <aside className="w-64 flex-shrink-0 hidden xl:block">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sticky top-32">
-            <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><Menu size={18} /> Categories</h3>
+        <aside className="w-56 lg:w-64 flex-shrink-0 hidden xl:block">
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-4 sticky top-36 transition-colors">
+            <h3 className="font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2"><Menu size={18} /> Categories</h3>
             <ul className="space-y-2">
               {categories.map((cat, i) => (
                 <li key={i}>
-                  <button className="w-full text-left text-sm text-slate-600 hover:text-teal-600 hover:bg-slate-50 px-3 py-2 rounded-lg transition flex items-center justify-between group">
+                  <button className="w-full text-left text-sm text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-3 py-2.5 rounded-lg transition flex items-center justify-between group">
                     {cat}
                     <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                   </button>
@@ -102,70 +142,146 @@ export default function Home() {
         </aside>
 
         {/* Center Content */}
-        <div className="flex-1 flex flex-col gap-8 min-w-0">
+        <div className="flex-1 flex flex-col gap-10 min-w-0 w-full overflow-hidden">
           
           {loading ? (
-            <div className="h-64 flex flex-col items-center justify-center text-slate-400">
-              <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p>Loading catalog...</p>
+            <div className="h-96 flex flex-col items-center justify-center text-slate-400">
+              <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p className="text-lg">Loading massive catalog...</p>
             </div>
           ) : (
             <>
-              {/* Promotional Banner */}
-              <div className="w-full h-64 bg-slate-900 rounded-xl overflow-hidden relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 z-10" />
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600&auto=format&fit=crop&q=80')] bg-cover bg-center mix-blend-overlay opacity-50" />
-                <div className="absolute z-20 inset-0 p-12 flex flex-col justify-center">
-                  <span className="text-teal-400 font-bold mb-2">MEGA SALE</span>
-                  <h2 className="text-4xl font-extrabold text-white mb-4">Discover millions of products</h2>
-                  <p className="text-slate-300 max-w-md mb-6">Shop directly from independent sellers worldwide with zero platform fees.</p>
-                  <button className="bg-white text-slate-900 px-6 py-3 rounded-lg font-bold w-max hover:bg-slate-200 transition">Shop Now</button>
+              {/* Hero Promotional Banner (Carousel) */}
+              <div className="w-full h-[300px] md:h-[400px] lg:h-[450px] bg-slate-900 rounded-2xl overflow-hidden relative group shadow-xl">
+                {slides.map((slide, idx) => (
+                  <div key={idx} className={`absolute inset-0 transition-opacity duration-1000 ${idx === activeSlide ? 'opacity-100 z-20' : 'opacity-0 z-10'}`}>
+                    <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/80 to-transparent z-10" />
+                    <img src={slide.img} alt={slide.title} className="w-full h-full object-cover opacity-60" />
+                    <div className="absolute z-20 inset-0 p-6 md:p-12 lg:p-16 flex flex-col justify-center max-w-3xl">
+                      <span className="text-teal-400 font-bold mb-3 text-sm md:text-base tracking-widest">{slide.tag}</span>
+                      <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 md:mb-6 leading-tight">{slide.title}</h2>
+                      <p className="text-base md:text-lg lg:text-xl text-slate-300 mb-8 max-w-xl">{slide.desc}</p>
+                      <button className="bg-teal-500 text-slate-900 px-8 py-3.5 rounded-full font-bold w-max hover:bg-teal-400 transition-colors shadow-lg">Shop Now</button>
+                    </div>
+                  </div>
+                ))}
+                
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+                  {slides.map((_, idx) => (
+                    <button 
+                      key={idx} 
+                      onClick={() => setActiveSlide(idx)}
+                      className={`w-3 h-3 rounded-full transition-all ${idx === activeSlide ? 'bg-teal-500 w-8' : 'bg-white/40 hover:bg-white/70'}`}
+                    />
+                  ))}
                 </div>
               </div>
 
               {/* Top Stores Row */}
-              <section>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2"><Store size={20} className="text-teal-600"/> Featured Stores</h3>
-                  <Link to="/market" className="text-sm font-semibold text-teal-600 hover:underline">See all stores</Link>
+              <section className="w-full">
+                <div className="flex items-center justify-between mb-5 px-2">
+                  <h3 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2"><Store size={24} className="text-teal-600 dark:text-teal-400"/> Discover Top Stores</h3>
+                  <Link to="/market" className="text-sm font-semibold text-teal-600 dark:text-teal-400 hover:underline flex items-center">See all stores <ChevronRight size={16}/></Link>
                 </div>
-                <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
                   {data.topStores?.map((store: any) => (
-                    <Link key={store._id} to={`/shop/${store.slug}`} className="snap-start min-w-[280px] bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md hover:border-teal-300 transition flex items-start gap-4">
-                      <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0 text-slate-400">
-                        <Store size={24} />
+                    <Link key={store._id} to={`/shop/${store.slug}`} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm hover:shadow-lg hover:border-teal-300 dark:hover:border-teal-600 transition-all flex items-start gap-5 group">
+                      <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center flex-shrink-0 text-slate-400 dark:text-slate-500 group-hover:bg-teal-50 dark:group-hover:bg-teal-900/30 transition-colors">
+                        <Store size={32} className="group-hover:text-teal-500 dark:group-hover:text-teal-400 transition-colors" />
                       </div>
-                      <div>
-                        <h4 className="font-bold text-slate-800 leading-tight">{store.name}</h4>
-                        <p className="text-xs text-slate-500 mt-1 line-clamp-2">{store.description || 'Independent Seller'}</p>
-                        {store.category && <span className="inline-block mt-2 text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">{store.category}</span>}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-lg text-slate-800 dark:text-slate-100 leading-tight truncate">{store.name}</h4>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{store.description || 'Independent Seller'}</p>
+                        <div className="flex items-center gap-2 mt-3">
+                          {store.category && <span className="inline-block text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-1 rounded-md font-bold">{store.category}</span>}
+                          {store.location && <span className="flex items-center gap-1 text-[10px] text-slate-400"><MapPin size={10}/> {store.location}</span>}
+                        </div>
                       </div>
                     </Link>
                   ))}
                 </div>
               </section>
 
-              {/* Latest Deals (Horizontal Scroll) */}
-              <section className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+              {/* NEW: Promotional Products (Continuous Marquee) */}
+              {data.promoProducts && data.promoProducts.length > 0 && (
+                <section className="bg-gradient-to-r from-rose-50 to-orange-50 dark:from-rose-950/20 dark:to-orange-950/20 rounded-2xl border border-rose-200 dark:border-rose-900/50 shadow-sm w-full overflow-hidden relative py-8 transition-colors">
+                  <div className="absolute top-6 left-6 z-20 bg-white dark:bg-slate-900 shadow-lg px-4 py-2 rounded-full flex items-center gap-2 border border-slate-100 dark:border-slate-800">
+                    <Tag size={18} className="text-rose-500"/>
+                    <h3 className="text-lg font-black text-slate-800 dark:text-slate-100">Super Promotions</h3>
+                  </div>
+                  
+                  <div className="w-full overflow-hidden flex hide-scrollbar pt-12 pb-4">
+                    <div className="flex gap-4 animate-marquee min-w-max hover:[animation-play-state:paused] pl-4">
+                      {/* Double the list to create a seamless infinite loop effect */}
+                      {[...(data.promoProducts || []), ...(data.promoProducts || [])].map((product: any, idx: number) => (
+                        <ProductCard key={product._id + idx + 'promo'} product={product} business={product.business_id} compact={true} />
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {/* NEW: Tech & Gadgets Row */}
+              {data.techProducts && data.techProducts.length > 0 && (
+                <section className="w-full">
+                  <div className="flex items-center justify-between mb-5 px-2">
+                    <h3 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2"><Smartphone size={24} className="text-blue-500"/> Tech & Gadgets</h3>
+                    <Link to="/market" className="text-sm font-semibold text-blue-500 hover:underline flex items-center">View Tech <ChevronRight size={16}/></Link>
+                  </div>
+                  
+                  <div className="w-full overflow-x-auto hide-scrollbar pb-6">
+                    <div className="flex gap-4 w-max px-2">
+                      {data.techProducts.map((product: any) => (
+                        <ProductCard key={product._id} product={product} business={product.business_id} compact={true} />
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {/* NEW: Fashion & Apparel Row */}
+              {data.fashionProducts && data.fashionProducts.length > 0 && (
+                <section className="w-full">
+                  <div className="flex items-center justify-between mb-5 px-2">
+                    <h3 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2"><ShoppingBag size={24} className="text-fuchsia-500"/> Fashion & Apparel</h3>
+                    <Link to="/market" className="text-sm font-semibold text-fuchsia-500 hover:underline flex items-center">View Fashion <ChevronRight size={16}/></Link>
+                  </div>
+                  
+                  <div className="w-full overflow-x-auto hide-scrollbar pb-6">
+                    <div className="flex gap-4 w-max px-2">
+                      {data.fashionProducts.map((product: any) => (
+                        <ProductCard key={product._id} product={product} business={product.business_id} compact={true} />
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {/* Latest Deals (Scrollable Row) */}
+              <section className="w-full bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2"><Tag size={20} className="text-rose-500"/> Today's Deals</h3>
-                  <span className="text-sm font-semibold text-teal-600 cursor-pointer hover:underline">See all deals</span>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">Newest Additions</h3>
                 </div>
-                <div className="flex gap-6 overflow-x-auto pb-4 hide-scrollbar">
-                  {data.latestProducts?.map((product: any) => (
-                    <ProductCard key={product._id} product={product} business={product.business_id} compact={true} />
-                  ))}
+                
+                <div className="w-full overflow-x-auto hide-scrollbar pb-2">
+                  <div className="flex gap-4 w-max">
+                    {data.latestProducts?.map((product: any) => (
+                      <ProductCard key={product._id} product={product} business={product.business_id} compact={true} />
+                    ))}
+                  </div>
                 </div>
               </section>
 
-              {/* Just For You (Dense Grid) */}
-              <section>
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2"><TrendingUp size={20} className="text-indigo-500"/> Recommended For You</h3>
+              {/* Just For You (Masonry Grid) */}
+              <section className="w-full">
+                <div className="flex items-center justify-between mb-6 px-2">
+                  <h3 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2"><TrendingUp size={24} className="text-teal-500"/> Recommended For You</h3>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                
+                {/* CSS Columns Masonry */}
+                <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6 gap-4 space-y-4 w-full pb-20 px-2">
                   {data.randomProducts?.map((product: any) => (
-                    <ProductCard key={product._id} product={product} business={product.business} />
+                    <ProductCard key={product._id} product={product} business={product.business} isMasonry={true} />
                   ))}
                 </div>
               </section>
@@ -176,8 +292,8 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-slate-300 pt-16 pb-8 mt-12 border-t border-slate-800">
-        <div className="max-w-[1600px] mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+      <footer className="bg-slate-900 text-slate-300 pt-16 pb-8 border-t border-slate-800 w-full mt-auto">
+        <div className="w-full px-4 lg:px-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           <div>
             <h4 className="text-white font-bold mb-4">Get to Know Us</h4>
             <ul className="space-y-2 text-sm">
@@ -210,62 +326,95 @@ export default function Home() {
             </ul>
           </div>
         </div>
-        <div className="text-center text-sm border-t border-slate-800 pt-8">
-          © 2026 SIMBBiz Marketplace. All rights reserved.
+        <div className="text-center text-sm border-t border-slate-800 pt-8 w-full">
+          © 2026 SIMBBiz Marketplace. Built for scale.
         </div>
       </footer>
     </div>
   );
 }
 
-function ProductCard({ product, business, compact = false }: any) {
-  const handleOrder = () => {
+function ProductCard({ product, business, compact = false, isMasonry = false }: any) {
+  const handleOrder = (e: any) => {
+    e.preventDefault();
     if (!business?.phone) return alert('This store has no phone number attached.');
     const text = encodeURIComponent(`Hi, I found this on SIMBBiz and I'd like to order: ${product.name} - $${product.price}`);
     window.open(`https://wa.me/${business.phone.replace(/\D/g, '')}?text=${text}`, '_blank');
   };
 
   return (
-    <div className={`bg-white border border-slate-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col ${compact ? 'min-w-[180px] w-[180px]' : 'w-full'}`}>
+    <div className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)] transition-all duration-300 flex flex-col group 
+      ${compact ? 'min-w-[200px] w-[200px] md:min-w-[240px] md:w-[240px] flex-shrink-0' : 'w-full'}
+      ${isMasonry ? 'break-inside-avoid mb-4' : ''}
+    `}>
       {/* Image Container */}
-      <div className={`relative bg-slate-100 ${compact ? 'aspect-square' : 'aspect-[4/3]'} group`}>
+      <div className={`relative bg-slate-50 dark:bg-slate-800 overflow-hidden ${compact ? 'aspect-square' : ''}`}>
         {product.image_url ? (
-          <img src={product.image_url} alt={product.name} className="w-full h-full object-cover mix-blend-multiply p-2 transition-transform duration-300 group-hover:scale-105" />
+          <img 
+            src={product.image_url} 
+            alt={product.name} 
+            className={`w-full ${isMasonry ? 'h-auto object-contain' : 'h-full object-cover'} transition-transform duration-700 group-hover:scale-105`} 
+            loading="lazy"
+          />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
-            <Store size={32} className="opacity-30" />
+          <div className="w-full aspect-square flex flex-col items-center justify-center text-slate-300 dark:text-slate-600">
+            <Store size={48} className="opacity-30 mb-2" />
+            <span className="text-xs">No Image</span>
           </div>
         )}
         
-        {product.discount > 0 && (
-          <div className="absolute top-2 left-2 bg-rose-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
-            {product.discount}% OFF
-          </div>
-        )}
+        {/* Badges */}
+        <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+          {product.is_promotion && (
+            <span className="bg-teal-500 text-slate-900 text-[10px] font-black px-2 py-1 rounded-full shadow-md uppercase tracking-wider">
+              Promo
+            </span>
+          )}
+          {product.discount > 0 && (
+            <span className="bg-rose-600 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-md">
+              -{product.discount}% OFF
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Details */}
-      <div className="p-3 flex-1 flex flex-col">
-        {/* Store Link */}
-        <Link to={`/shop/${business?.slug}`} className="text-[10px] font-medium text-slate-500 hover:text-teal-600 hover:underline mb-1 truncate block">
-          {business?.name || 'Unknown Store'}
+      <div className="p-4 flex-1 flex flex-col border-t border-slate-100 dark:border-slate-800">
+        
+        {/* Store Name */}
+        <Link to={`/shop/${business?.slug}`} className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 hover:underline mb-1.5 flex items-center gap-1 w-max">
+          <Store size={12}/> {business?.name || 'Independent Store'}
         </Link>
         
-        <h4 className="text-sm font-medium text-slate-800 leading-tight mb-2 line-clamp-2 hover:text-teal-600 cursor-pointer">{product.name}</h4>
+        {/* Product Name */}
+        <h4 className="text-[14px] md:text-[15px] font-semibold text-slate-800 dark:text-slate-100 leading-snug mb-2 line-clamp-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{product.name}</h4>
         
-        <div className="mt-auto">
-          <div className="flex items-baseline gap-1.5 mb-2">
-            <span className="text-lg font-extrabold text-slate-900">${product.price.toFixed(2)}</span>
+        {/* Description (Masonry Only) */}
+        {isMasonry && product.description && (
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">{product.description}</p>
+        )}
+
+        {/* Location */}
+        {business?.location && (
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-1">
+            <MapPin size={10}/> {business.location}
+          </p>
+        )}
+        
+        {/* Price & Action */}
+        <div className="mt-auto pt-2">
+          <div className="flex items-end gap-2 mb-3">
+            <span className="text-xl font-black text-slate-900 dark:text-white">${product.price.toFixed(2)}</span>
             {product.discount > 0 && (
-              <span className="text-xs text-slate-400 line-through">${(product.price / (1 - product.discount/100)).toFixed(2)}</span>
+              <span className="text-xs font-medium text-slate-400 dark:text-slate-500 line-through mb-1">${(product.price / (1 - product.discount/100)).toFixed(2)}</span>
             )}
           </div>
           
           <button 
             onClick={handleOrder}
-            className="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold py-2 rounded transition-colors"
+            className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-teal-500 dark:hover:bg-teal-500 hover:text-slate-900 dark:hover:text-slate-900 font-bold py-2.5 rounded-lg transition-colors text-sm shadow-sm"
           >
-            Order via WhatsApp
+            Buy on WhatsApp
           </button>
         </div>
       </div>
