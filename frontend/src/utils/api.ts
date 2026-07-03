@@ -1,8 +1,22 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('authToken');
+  const headers: Record<string, string> = {};
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
+};
+
 export const api = {
   get: async (endpoint: string) => {
-    const res = await fetch(`${BASE_URL}${endpoint}`, { credentials: 'include' });
+    const res = await fetch(`${BASE_URL}${endpoint}`, {
+      credentials: 'include',
+      headers: getAuthHeaders()
+    });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'API Error');
     return data;
@@ -10,7 +24,10 @@ export const api = {
   post: async (endpoint: string, body: any) => {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders()
+      },
       body: JSON.stringify(body),
       credentials: 'include'
     });
@@ -21,7 +38,10 @@ export const api = {
   patch: async (endpoint: string, body: any) => {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders()
+      },
       body: JSON.stringify(body),
       credentials: 'include'
     });
@@ -32,7 +52,8 @@ export const api = {
   delete: async (endpoint: string) => {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: 'DELETE',
-      credentials: 'include'
+      credentials: 'include',
+      headers: getAuthHeaders()
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'API Error');

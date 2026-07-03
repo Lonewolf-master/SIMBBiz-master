@@ -56,8 +56,29 @@ export default function Home() {
 
   const categories = ["Electronics & Tech", "Fashion & Apparel", "Home & Garden", "Real-Estate", "Health & Beauty", "Automotive", "Services", "Groceries"];
 
+  // Search filtering
+  const getFilteredProducts = (productsArray: any[]) => {
+    if (!productsArray || !searchQuery) return productsArray;
+    const lowerQuery = searchQuery.toLowerCase();
+    return productsArray.filter(p => 
+      p.name?.toLowerCase().includes(lowerQuery) || 
+      p.business?.name?.toLowerCase().includes(lowerQuery) ||
+      p.description?.toLowerCase().includes(lowerQuery)
+    );
+  };
+
+  const getFilteredStores = (storesArray: any[]) => {
+    if (!storesArray || !searchQuery) return storesArray;
+    const lowerQuery = searchQuery.toLowerCase();
+    return storesArray.filter(s => 
+      s.name?.toLowerCase().includes(lowerQuery) || 
+      s.category?.toLowerCase().includes(lowerQuery) ||
+      s.location?.toLowerCase().includes(lowerQuery)
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-200 flex flex-col w-full overflow-x-hidden transition-colors">
+    <div className="min-h-screen bg-transparent font-sans text-slate-800 dark:text-slate-200 flex flex-col w-full overflow-x-hidden transition-colors">
       {/* Top Navbar */}
       <header className="bg-slate-900 dark:bg-slate-950 text-white sticky top-0 z-50 w-full border-b border-slate-800 transition-colors">
         <div className="w-full px-2 lg:px-4 py-3 flex items-center justify-between gap-2 md:gap-4 flex-wrap lg:flex-nowrap">
@@ -184,7 +205,7 @@ export default function Home() {
                   <Link to="/market" className="text-sm font-semibold text-teal-600 dark:text-teal-400 hover:underline flex items-center">See all stores <ChevronRight size={16}/></Link>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
-                  {data.topStores?.map((store: any) => (
+                  {getFilteredStores(data.topStores)?.map((store: any) => (
                     <Link key={store._id} to={`/shop/${store.slug}`} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm hover:shadow-lg hover:border-teal-300 dark:hover:border-teal-600 transition-all flex items-start gap-5 group">
                       <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center flex-shrink-0 text-slate-400 dark:text-slate-500 group-hover:bg-teal-50 dark:group-hover:bg-teal-900/30 transition-colors">
                         <Store size={32} className="group-hover:text-teal-500 dark:group-hover:text-teal-400 transition-colors" />
@@ -213,7 +234,7 @@ export default function Home() {
                   <div className="w-full overflow-hidden flex hide-scrollbar pt-12 pb-4">
                     <div className="flex gap-4 animate-marquee min-w-max hover:[animation-play-state:paused] pl-4">
                       {/* Double the list to create a seamless infinite loop effect */}
-                      {[...(data.promoProducts || []), ...(data.promoProducts || [])].map((product: any, idx: number) => (
+                      {[...(getFilteredProducts(data.promoProducts) || []), ...(getFilteredProducts(data.promoProducts) || [])].map((product: any, idx: number) => (
                         <ProductCard key={product._id + idx + 'promo'} product={product} business={product.business_id} compact={true} />
                       ))}
                     </div>
@@ -231,7 +252,7 @@ export default function Home() {
                   
                   <div className="w-full overflow-x-auto hide-scrollbar pb-6">
                     <div className="flex gap-4 w-max px-2">
-                      {data.techProducts.map((product: any) => (
+                      {getFilteredProducts(data.techProducts).map((product: any) => (
                         <ProductCard key={product._id} product={product} business={product.business_id} compact={true} />
                       ))}
                     </div>
@@ -249,7 +270,7 @@ export default function Home() {
                   
                   <div className="w-full overflow-x-auto hide-scrollbar pb-6">
                     <div className="flex gap-4 w-max px-2">
-                      {data.fashionProducts.map((product: any) => (
+                      {getFilteredProducts(data.fashionProducts).map((product: any) => (
                         <ProductCard key={product._id} product={product} business={product.business_id} compact={true} />
                       ))}
                     </div>
@@ -265,7 +286,7 @@ export default function Home() {
                 
                 <div className="w-full overflow-x-auto hide-scrollbar pb-2">
                   <div className="flex gap-4 w-max">
-                    {data.latestProducts?.map((product: any) => (
+                    {getFilteredProducts(data.latestProducts)?.map((product: any) => (
                       <ProductCard key={product._id} product={product} business={product.business_id} compact={true} />
                     ))}
                   </div>
@@ -279,8 +300,8 @@ export default function Home() {
                 </div>
                 
                 {/* CSS Columns Masonry */}
-                <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6 gap-4 space-y-4 w-full pb-20 px-2">
-                  {data.randomProducts?.map((product: any) => (
+                <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6 gap-4 w-full pb-20 px-2">
+                  {getFilteredProducts(data.randomProducts)?.map((product: any) => (
                     <ProductCard key={product._id} product={product} business={product.business} isMasonry={true} />
                   ))}
                 </div>

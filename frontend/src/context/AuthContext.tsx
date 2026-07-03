@@ -7,6 +7,7 @@ interface User {
   name: string;
   email: string;
   role?: string;
+  token?: string;
 }
 
 interface Store {
@@ -75,6 +76,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (userData: User) => {
+    if (userData.token) {
+      localStorage.setItem('authToken', userData.token);
+    }
+
     setUser(userData);
     await fetchStores();
   };
@@ -95,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setActiveStore(null);
     localStorage.removeItem('activeStoreId');
     localStorage.removeItem('businessId'); // legacy
+    localStorage.removeItem('authToken');
   };
 
   const switchStore = (storeId: string) => {

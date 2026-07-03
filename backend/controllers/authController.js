@@ -11,6 +11,8 @@ const sendTokenResponse = (user, statusCode, res) => {
   const options = {
     expires: new Date(Date.now() + config.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
     httpOnly: true,
+    sameSite: 'lax',
+    path: '/'
   };
 
   // Secure cookie in production
@@ -20,6 +22,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 
   res.status(statusCode).cookie('token', token, options).json({
     success: true,
+    token,
     data: {
       _id: user._id,
       name: user.name,
@@ -36,9 +39,11 @@ exports.register = async (req, res) => {
       return res.status(400).json({ success: false, error: 'name, email, and password are required' });
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     const user = new User({
       name,
-      email,
+      email: normalizedEmail,
       password
     });
 
@@ -59,8 +64,12 @@ exports.login = async (req, res) => {
       return res.status(400).json({ success: false, error: 'Please provide an email and password' });
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     // Check for user
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      email: { $regex: `^${normalizedEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' }
+    });
     if (!user) {
       return res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
