@@ -38,12 +38,6 @@ jobs:
       - name: Run frontend tests
         run: npm test --prefix frontend --if-present
 
-      # - name: Lint backend code
-      #   run: npm run lint --prefix backend --if-present
-
-      # - name: Lint frontend code
-      #   run: npm run lint --prefix frontend --if-present
-
       - name: Check frontend for syntax errors
         run: npm run build --prefix frontend
 
@@ -55,22 +49,7 @@ jobs:
       - name: checkout source code
         uses: actions/checkout@v4
 
-      - name: build backend image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          dockerfile: ./backend/Dockerfile 
-          push: false
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/SIMBBiz-backend:build-${{github.run_number}},${{ secrets.DOCKER_HUB_USERNAME }}/SIMBBiz-backend:${{ github.sha }}
-
-      - name: build frontend image 
-        uses: docker/build-push-action@v5
-        with:
-          context: ./frontend 
-          dockerfile: ./frontend/Dockerfile
-          push: false
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/SIMBBiz-frontend:build-${{github.run_number}},${{ secrets.DOCKER_HUB_USERNAME }}/SIMBBiz-frontend:${{ github.sha }}
-
+      # FIX 1: Move login and Buildx setup to the top before building
       - name: log in to docker hub
         uses: docker/login-action@v3 
         with:
@@ -80,18 +59,24 @@ jobs:
       - name: set up docker buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: push backend image
+      # FIX 2: One single step to build and push backend (Lowercase names & 'file:' input)
+      - name: build and push backend image
         uses: docker/build-push-action@v5 
         with:
           context: ./backend
-          dockerfile: ./backend/Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/SIMBBiz-backend:build-${{github.run_number}},${{ secrets.DOCKER_HUB_USERNAME }}/SIMBBiz-backend:${{ github.sha }}
+          file: ./backend/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/simbbiz-backend:build-${{ github.run_number }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/simbbiz-backend:${{ github.sha }}
 
-      - name:  push frontend image 
+      # FIX 3: One single step to build and push frontend (Lowercase names & 'file:' input)
+      - name: build and push frontend image 
         uses: docker/build-push-action@v5
         with:
           context: ./frontend 
-          dockerfile: ./frontend/Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/SIMBBiz-frontend:build-${{github.run_number}},${{ secrets.DOCKER_HUB_USERNAME }}/SIMBBiz-frontend:${{ github.sha }}
+          file: ./frontend/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/simbbiz-frontend:build-${{ github.run_number }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/simbbiz-frontend:${{ github.sha }}
