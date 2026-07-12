@@ -374,7 +374,7 @@ function ProductCard({ product, business, compact = false, isMasonry = false }: 
           <img 
             src={product.image_url} 
             alt={product.name} 
-            className={`w-full ${isMasonry ? 'h-auto object-contain' : 'h-full object-cover'} transition-transform duration-700 group-hover:scale-105`} 
+            className={`w-full block ${isMasonry ? 'h-auto object-cover' : 'h-full object-cover'} transition-transform duration-700 group-hover:scale-105`} 
             loading="lazy"
           />
         ) : (

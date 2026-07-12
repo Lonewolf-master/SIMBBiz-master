@@ -50,23 +50,25 @@ export default function Catalogue() {
     setUploadingImage(true);
     setError('');
     const data = new FormData();
-    data.append('file', file);
-    data.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+    data.append('image', file); // 'image' matches the backend upload.single('image')
     
     try {
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+      const token = localStorage.getItem('authToken');
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/upload`, {
         method: 'POST',
-        body: data
+        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: data,
+        credentials: 'include'
       });
-      const uploaded = await res.json();
-      if (uploaded.secure_url) {
-        setFormData(prev => ({ ...prev, image_url: uploaded.secure_url }));
+      const result = await res.json();
+      if (res.ok && result.secure_url) {
+        setFormData(prev => ({ ...prev, image_url: result.secure_url }));
       } else {
-        setError('Cloudinary upload failed: Make sure your credentials are correct in .env');
+        setError(result.error || 'Cloudinary upload failed on the backend.');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Image upload failed", err);
-      setError('Image upload failed');
+      setError(err.message || 'Image upload failed');
     } finally {
       setUploadingImage(false);
     }

@@ -12,6 +12,7 @@ const paymentController = require('../controllers/paymentController');
 const liabilityController = require('../controllers/liabilityController');
 const costController = require('../controllers/costController');
 const shopController = require('../controllers/shopController');
+const uploadRoutes = require('./uploadRoutes');
 
 // --- AUTH ---
 router.post('/auth/register', authController.register);
@@ -75,5 +76,8 @@ router.post('/businesses/:id/daily-costs', protect, authorizeBusinessOwner, cost
 router.get('/shop', shopController.getAllStores);
 router.get('/shop/discover', shopController.getDiscoveryData);
 router.get('/shop/:slug', shopController.getStorefront);
+
+// --- UPLOAD ---
+router.use('/upload', uploadRoutes);
 
 module.exports = router;
