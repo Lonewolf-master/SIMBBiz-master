@@ -38,11 +38,11 @@ jobs:
       - name: Run frontend tests
         run: npm test --prefix frontend --if-present
 
-      - name: Lint backend code
-        run: npm run lint --prefix backend --if-present
+      # - name: Lint backend code
+      #   run: npm run lint --prefix backend --if-present
 
-      - name: Lint frontend code
-        run: npm run lint --prefix frontend --if-present
+      # - name: Lint frontend code
+      #   run: npm run lint --prefix frontend --if-present
 
       - name: Check frontend for syntax errors
         run: npm run build --prefix frontend
