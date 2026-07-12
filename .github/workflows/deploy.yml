@@ -58,7 +58,10 @@ jobs:
 
       - name: set up docker buildx
         uses: docker/setup-buildx-action@v3
-
+        with:
+          driver: cloud
+          endpoint: "divinewisdomorima/simbbiz"
+          
       # FIX 2: One single step to build and push backend (Lowercase names & 'file:' input)
       - name: build and push backend image
         uses: docker/build-push-action@v5 
