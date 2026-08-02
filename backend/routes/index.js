@@ -12,6 +12,7 @@ const paymentController = require('../controllers/paymentController');
 const liabilityController = require('../controllers/liabilityController');
 const costController = require('../controllers/costController');
 const shopController = require('../controllers/shopController');
+const subscriptionController = require('../controllers/subscriptionController');
 const uploadRoutes = require('./uploadRoutes');
 
 // --- AUTH ---
@@ -71,6 +72,10 @@ router.post('/businesses/:id/liability-payments', protect, authorizeBusinessOwne
 // --- COSTS ---
 router.get('/businesses/:id/daily-costs', protect, authorizeBusinessOwner, costController.list);
 router.post('/businesses/:id/daily-costs', protect, authorizeBusinessOwner, costController.upsertDate);
+
+// --- SUBSCRIPTIONS & WEBHOOKS ---
+router.post('/businesses/:id/buy-spaces', protect, authorizeBusinessOwner, subscriptionController.buySpaces);
+router.post('/webhooks/paveway', subscriptionController.pavewayWebhook);
 
 // --- SHOP (PUBLIC) ---
 router.get('/shop', shopController.getAllStores);

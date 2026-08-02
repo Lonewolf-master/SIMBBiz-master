@@ -19,7 +19,7 @@ export default function Signup() {
     try {
       const res = await api.post('/auth/register', formData);
       if (res.success) {
-        await login({ ...res.data.user, token: res.data.token });
+        await login({ ...res.data, token: res.token });
         navigate('/create-store');
       }
     } catch (err: any) {

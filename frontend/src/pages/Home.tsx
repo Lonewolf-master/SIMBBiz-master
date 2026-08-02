@@ -128,7 +128,7 @@ export default function Home() {
             </button>
 
             <Link to="/login" className="font-semibold text-sm md:text-base hover:text-teal-400 transition hidden sm:block">Login</Link>
-            <Link to="/signup" className="bg-teal-500 text-slate-900 px-3 md:px-4 py-2 rounded-lg font-bold text-sm md:text-base hover:bg-teal-400 transition whitespace-nowrap">Start Selling</Link>
+            <Link to="/signup" className="bg-teal-500 text-slate-900 px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg font-bold text-xs md:text-base hover:bg-teal-400 transition whitespace-nowrap">Start Selling</Link>
           </div>
         </div>
         
@@ -173,16 +173,16 @@ export default function Home() {
           ) : (
             <>
               {/* Hero Promotional Banner (Carousel) */}
-              <div className="w-full h-[300px] md:h-[400px] lg:h-[450px] bg-slate-900 rounded-2xl overflow-hidden relative group shadow-xl">
+              <div className="w-full h-[350px] md:h-[400px] lg:h-[450px] bg-slate-900 rounded-2xl overflow-hidden relative group shadow-xl">
                 {slides.map((slide, idx) => (
                   <div key={idx} className={`absolute inset-0 transition-opacity duration-1000 ${idx === activeSlide ? 'opacity-100 z-20' : 'opacity-0 z-10'}`}>
                     <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/80 to-transparent z-10" />
                     <img src={slide.img} alt={slide.title} className="w-full h-full object-cover opacity-60" />
-                    <div className="absolute z-20 inset-0 p-6 md:p-12 lg:p-16 flex flex-col justify-center max-w-3xl">
-                      <span className="text-teal-400 font-bold mb-3 text-sm md:text-base tracking-widest">{slide.tag}</span>
-                      <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 md:mb-6 leading-tight">{slide.title}</h2>
-                      <p className="text-base md:text-lg lg:text-xl text-slate-300 mb-8 max-w-xl">{slide.desc}</p>
-                      <button className="bg-teal-500 text-slate-900 px-8 py-3.5 rounded-full font-bold w-max hover:bg-teal-400 transition-colors shadow-lg">Shop Now</button>
+                    <div className="absolute z-20 inset-0 p-5 sm:p-8 md:p-12 lg:p-16 flex flex-col justify-center max-w-3xl">
+                      <span className="text-teal-400 font-bold mb-2 md:mb-3 text-xs md:text-base tracking-widest">{slide.tag}</span>
+                      <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-3 md:mb-6 leading-tight">{slide.title}</h2>
+                      <p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-300 mb-6 md:mb-8 max-w-xl line-clamp-2 md:line-clamp-none">{slide.desc}</p>
+                      <button className="bg-teal-500 text-slate-900 px-6 py-2.5 md:px-8 md:py-3.5 rounded-full font-bold w-max hover:bg-teal-400 transition-colors shadow-lg text-sm md:text-base">Shop Now</button>
                     </div>
                   </div>
                 ))}
@@ -200,9 +200,9 @@ export default function Home() {
 
               {/* Top Stores Row */}
               <section className="w-full">
-                <div className="flex items-center justify-between mb-5 px-2">
-                  <h3 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2"><Store size={24} className="text-teal-600 dark:text-teal-400"/> Discover Top Stores</h3>
-                  <Link to="/market" className="text-sm font-semibold text-teal-600 dark:text-teal-400 hover:underline flex items-center">See all stores <ChevronRight size={16}/></Link>
+                <div className="flex flex-wrap items-center justify-between mb-4 md:mb-5 px-2 gap-2">
+                  <h3 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2"><Store className="text-teal-600 dark:text-teal-400 w-5 h-5 md:w-6 md:h-6"/> Discover Top Stores</h3>
+                  <Link to="/market" className="text-xs md:text-sm font-semibold text-teal-600 dark:text-teal-400 hover:underline flex items-center">See all stores <ChevronRight className="w-4 h-4 md:w-5 md:h-5"/></Link>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
                   {getFilteredStores(data.topStores)?.map((store: any) => (
@@ -245,9 +245,9 @@ export default function Home() {
               {/* NEW: Tech & Gadgets Row */}
               {data.techProducts && data.techProducts.length > 0 && (
                 <section className="w-full">
-                  <div className="flex items-center justify-between mb-5 px-2">
-                    <h3 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2"><Smartphone size={24} className="text-blue-500"/> Tech & Gadgets</h3>
-                    <Link to="/market" className="text-sm font-semibold text-blue-500 hover:underline flex items-center">View Tech <ChevronRight size={16}/></Link>
+                  <div className="flex flex-wrap items-center justify-between mb-4 md:mb-5 px-2 gap-2">
+                    <h3 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2"><Smartphone className="text-blue-500 w-5 h-5 md:w-6 md:h-6"/> Tech & Gadgets</h3>
+                    <Link to="/market" className="text-xs md:text-sm font-semibold text-blue-500 hover:underline flex items-center">View Tech <ChevronRight className="w-4 h-4 md:w-5 md:h-5"/></Link>
                   </div>
                   
                   <div className="w-full overflow-x-auto hide-scrollbar pb-6">
@@ -263,9 +263,9 @@ export default function Home() {
               {/* NEW: Fashion & Apparel Row */}
               {data.fashionProducts && data.fashionProducts.length > 0 && (
                 <section className="w-full">
-                  <div className="flex items-center justify-between mb-5 px-2">
-                    <h3 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2"><ShoppingBag size={24} className="text-fuchsia-500"/> Fashion & Apparel</h3>
-                    <Link to="/market" className="text-sm font-semibold text-fuchsia-500 hover:underline flex items-center">View Fashion <ChevronRight size={16}/></Link>
+                  <div className="flex flex-wrap items-center justify-between mb-4 md:mb-5 px-2 gap-2">
+                    <h3 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2"><ShoppingBag className="text-fuchsia-500 w-5 h-5 md:w-6 md:h-6"/> Fashion & Apparel</h3>
+                    <Link to="/market" className="text-xs md:text-sm font-semibold text-fuchsia-500 hover:underline flex items-center">View Fashion <ChevronRight className="w-4 h-4 md:w-5 md:h-5"/></Link>
                   </div>
                   
                   <div className="w-full overflow-x-auto hide-scrollbar pb-6">
@@ -279,9 +279,9 @@ export default function Home() {
               )}
 
               {/* Latest Deals (Scrollable Row) */}
-              <section className="w-full bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">Newest Additions</h3>
+              <section className="w-full bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+                <div className="flex items-center justify-between mb-4 md:mb-6">
+                  <h3 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">Newest Additions</h3>
                 </div>
                 
                 <div className="w-full overflow-x-auto hide-scrollbar pb-2">
@@ -295,12 +295,12 @@ export default function Home() {
 
               {/* Just For You (Masonry Grid) */}
               <section className="w-full">
-                <div className="flex items-center justify-between mb-6 px-2">
-                  <h3 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2"><TrendingUp size={24} className="text-teal-500"/> Recommended For You</h3>
+                <div className="flex items-center justify-between mb-4 md:mb-6 px-2">
+                  <h3 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2"><TrendingUp className="text-teal-500 w-5 h-5 md:w-6 md:h-6"/> Recommended For You</h3>
                 </div>
                 
                 {/* CSS Columns Masonry */}
-                <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6 gap-4 w-full pb-20 px-2">
+                <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6 gap-3 md:gap-4 w-full pb-20 px-1 md:px-2">
                   {getFilteredProducts(data.randomProducts)?.map((product: any) => (
                     <ProductCard key={product._id} product={product} business={product.business} isMasonry={true} />
                   ))}
@@ -403,8 +403,8 @@ function ProductCard({ product, business, compact = false, isMasonry = false }: 
       <div className="p-4 flex-1 flex flex-col border-t border-slate-100 dark:border-slate-800">
         
         {/* Store Name */}
-        <Link to={`/shop/${business?.slug}`} className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 hover:underline mb-1.5 flex items-center gap-1 w-max">
-          <Store size={12}/> {business?.name || 'Independent Store'}
+        <Link to={`/shop/${business?.slug}`} className="text-[11px] md:text-xs font-bold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 hover:underline mb-1.5 flex items-center gap-1 max-w-full">
+          <Store size={12} className="flex-shrink-0" /> <span className="truncate">{business?.name || 'Independent Store'}</span>
         </Link>
         
         {/* Product Name */}
@@ -433,7 +433,7 @@ function ProductCard({ product, business, compact = false, isMasonry = false }: 
           
           <button 
             onClick={handleOrder}
-            className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-teal-500 dark:hover:bg-teal-500 hover:text-slate-900 dark:hover:text-slate-900 font-bold py-2.5 rounded-lg transition-colors text-sm shadow-sm"
+            className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-teal-500 dark:hover:bg-teal-500 hover:text-slate-900 dark:hover:text-slate-900 font-bold py-2 md:py-2.5 rounded-lg transition-colors text-[11px] md:text-sm shadow-sm"
           >
             Buy on WhatsApp
           </button>

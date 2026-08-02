@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Package, Users, DollarSign, PieChart, Settings, Menu, X, Store as StoreIcon, LogOut, Moon, Sun } from 'lucide-react';
+import { Home, Package, Users, DollarSign, PieChart, Settings, Menu, X, Store as StoreIcon, LogOut, Moon, Sun, CreditCard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -17,6 +17,7 @@ export default function Layout() {
     { name: 'Sales', path: '/dashboard/sales', icon: DollarSign },
     { name: 'Customers', path: '/dashboard/customers', icon: Users },
     { name: 'Reports', path: '/dashboard/reports', icon: PieChart },
+    { name: 'Billing', path: '/dashboard/billing', icon: CreditCard },
     { name: 'Settings', path: '/dashboard/settings', icon: Settings },
   ];
 

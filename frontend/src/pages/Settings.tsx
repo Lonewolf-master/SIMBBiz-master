@@ -9,7 +9,7 @@ export default function Settings() {
   
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
-  
+
   // Dummy form states for MVP
   const [profileData, setProfileData] = useState({ name: user?.name || '', email: user?.email || '' });
   const [storeData, setStoreData] = useState({ 

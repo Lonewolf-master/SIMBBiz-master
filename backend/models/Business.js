@@ -11,7 +11,10 @@ const businessSchema = new mongoose.Schema({
   lang: { type: String, default: 'en' },
   currency: { type: String, default: 'USD' },
   pin_hash: { type: String },
-  auto_lock_min: { type: Number, default: 0 }
+  auto_lock_min: { type: Number, default: 0 },
+  subscription_plan: { type: String, default: 'free' },
+  subscription_expiry: { type: Date },
+  item_slots_available: { type: Number, default: 5 }
 }, { timestamps: true });
 
 // Auto-generate slug from name if not provided

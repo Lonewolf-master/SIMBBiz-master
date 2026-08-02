@@ -18,6 +18,8 @@ interface Store {
   phone?: string;
   currency?: string;
   description?: string;
+  item_slots_available?: number;
+  subscription_plan?: string;
 }
 
 interface AuthContextType {

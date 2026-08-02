@@ -11,14 +11,10 @@ const sendTokenResponse = (user, statusCode, res) => {
   const options = {
     expires: new Date(Date.now() + config.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: 'none',
+    secure: true,
     path: '/'
   };
-
-  // Secure cookie in production
-  if (process.env.NODE_ENV === 'production') {
-    options.secure = true;
-  }
 
   res.status(statusCode).cookie('token', token, options).json({
     success: true,

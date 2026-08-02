@@ -19,7 +19,7 @@ export default function Login() {
     try {
       const res = await api.post('/auth/login', formData);
       if (res.success) {
-        await login(res.data);
+        await login({ ...res.data, token: res.token });
         navigate('/dashboard');
       }
     } catch (err: any) {
