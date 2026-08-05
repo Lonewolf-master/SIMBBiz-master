@@ -14,7 +14,8 @@ const businessSchema = new mongoose.Schema({
   auto_lock_min: { type: Number, default: 0 },
   subscription_plan: { type: String, default: 'free' },
   subscription_expiry: { type: Date },
-  item_slots_available: { type: Number, default: 5 }
+  item_slots_available: { type: Number, default: 5 },
+  isSuspended: { type: Boolean, default: false }
 }, { timestamps: true });
 
 // Auto-generate slug from name if not provided

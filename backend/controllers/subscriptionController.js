@@ -1,15 +1,16 @@
 const SubscriptionPayment = require('../models/SubscriptionPayment');
 const Business = require('../models/Business');
+const Plan = require('../models/Plan');
 const axios = require('axios');
 const crypto = require('crypto');
 
 const PAVEWAY_SECRET_KEY = process.env.PAVEWAY_SECRET_KEY || 'your_paveway_secret_key';
 const PAVEWAY_WEBHOOK_SECRET = process.env.PAVEWAY_WEBHOOK_SECRET || 'your_paveway_webhook_secret';
-const PAVEWAY_API_URL = 'https://api.paveway.group/v1/payments'; // Adjust to their actual endpoint
+const PAVEWAY_API_URL = 'https://api.paveway.group/v1/payments';
 
 exports.buySpaces = async (req, res) => {
   try {
-    const { payment_method, spaces, phone_or_card } = req.body;
+    const { payment_method, spaces, phone_or_card, plan_id } = req.body;
     if (!['MTN', 'ORANGE', 'VIRTUAL_CARD'].includes(payment_method)) {
       return res.status(400).json({ success: false, error: 'Invalid payment method' });
     }
@@ -18,8 +19,24 @@ exports.buySpaces = async (req, res) => {
       return res.status(400).json({ success: false, error: 'Phone number is required' });
     }
 
-    const costPerSpace = 200;
-    const amount = spaces * costPerSpace;
+    let amount = 0;
+    let slotsToAdd = 0;
+    let planName = '';
+
+    if (plan_id) {
+      const plan = await Plan.findById(plan_id);
+      if (!plan) return res.status(404).json({ success: false, error: 'Plan not found' });
+      amount = plan.price;
+      slotsToAdd = plan.slots;
+      planName = plan.name;
+    } else {
+      // Fallback to custom spaces
+      if (!spaces || spaces < 5) return res.status(400).json({ success: false, error: 'Minimum 5 spaces required' });
+      const costPerSpace = 200;
+      amount = spaces * costPerSpace;
+      slotsToAdd = spaces;
+      planName = `${spaces}_slots`;
+    }
     
     // Idempotency: Check for pending transaction within last 5 minutes to prevent double charge
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
@@ -44,8 +61,8 @@ exports.buySpaces = async (req, res) => {
       amount,
       payment_method,
       transaction_reference,
-      plan_or_spaces: `${spaces}_slots`,
-      slots_added: spaces,
+      plan_or_spaces: planName,
+      slots_added: slotsToAdd,
       payment_status: 'pending'
     });
 
@@ -58,8 +75,8 @@ exports.buySpaces = async (req, res) => {
         currency: 'XAF',
         phone: phone_or_card,
         reference: transaction_reference,
-        description: `Purchase of ${spaces} spaces on SIMBBiz`,
-        payment_method: payment_method // Some APIs need this specific param mapped
+        description: `Purchase of ${planName} on SIMBBiz`,
+        payment_method: payment_method
       }, {
         headers: {
           'Authorization': `Bearer ${PAVEWAY_SECRET_KEY}`,

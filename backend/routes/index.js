@@ -28,7 +28,34 @@ router.get('/user/businesses', protect, businessController.getMyBusinesses);
 // --- ADMIN ---
 const { authorizeAdmin } = require('../middleware/auth');
 const adminController = require('../controllers/adminController');
+const advancedAdminController = require('../controllers/advancedAdminController');
+
+// Advanced Admin Analytics
+router.get('/admin/analytics', protect, authorizeAdmin, advancedAdminController.getAdvancedAnalytics);
+
+// Announcements
+router.get('/announcements', protect, advancedAdminController.getAnnouncements);
+router.post('/admin/announcements', protect, authorizeAdmin, advancedAdminController.createAnnouncement);
+router.delete('/admin/announcements/:id', protect, authorizeAdmin, advancedAdminController.deleteAnnouncement);
+
+// Plans
+router.get('/plans', protect, advancedAdminController.getPlans);
+router.post('/admin/plans', protect, authorizeAdmin, advancedAdminController.createPlan);
+router.delete('/admin/plans/:id', protect, authorizeAdmin, advancedAdminController.deletePlan);
+
+// Tickets
+router.get('/tickets', protect, advancedAdminController.getTickets);
+router.post('/tickets', protect, advancedAdminController.createTicket);
+router.post('/tickets/:id/reply', protect, advancedAdminController.replyTicket);
+
 router.get('/admin/stats', protect, authorizeAdmin, adminController.getPlatformStats);
+router.get('/admin/users', protect, authorizeAdmin, adminController.getAllUsers);
+router.patch('/admin/users/:id/role', protect, authorizeAdmin, adminController.updateUserRole);
+router.delete('/admin/users/:id', protect, authorizeAdmin, adminController.deleteUser);
+router.get('/admin/businesses', protect, authorizeAdmin, adminController.getAllBusinesses);
+router.patch('/admin/businesses/:id/suspend', protect, authorizeAdmin, advancedAdminController.toggleBusinessSuspension);
+router.get('/admin/subscriptions', protect, authorizeAdmin, adminController.getAllSubscriptions);
+router.patch('/admin/subscriptions/:id/status', protect, authorizeAdmin, adminController.updateSubscriptionStatus);
 
 // --- BUSINESSES ---
 router.get('/businesses/:slug', businessController.getBySlug);
