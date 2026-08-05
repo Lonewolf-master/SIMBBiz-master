@@ -60,16 +60,16 @@ if (process.env.NODE_ENV === 'production' || process.env.SERVE_FRONTEND === 'tru
 
         html = html.replace('<title>SIMBBiz</title>', `<title>${store.name} - SIMBBiz</title>`);
         html = html.replace('<!-- OG_TAGS -->', `
-    <meta property="og:title" content="${store.name} - SIMBBiz" />
-    <meta property="og:description" content="${store.description || 'Welcome to my SIMBBiz store catalog!'}" />
+    <meta property="og:title" content="🛍️ ${store.name} | SIMBBiz Store" />
+    <meta property="og:description" content="✨ ${store.description || 'Welcome to my store!'} 👉 Click here to explore our exclusive catalog and order on WhatsApp today!" />
     <meta property="og:image" content="${imageUrl}" />
     <meta property="og:image:width" content="600" />
     <meta property="og:image:height" content="600" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${req.protocol}://${req.get('host')}${req.originalUrl}" />
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="${store.name} - SIMBBiz">
-    <meta name="twitter:description" content="${store.description || 'Welcome to my SIMBBiz store catalog!'}">
+    <meta name="twitter:title" content="🛍️ ${store.name} | SIMBBiz Store">
+    <meta name="twitter:description" content="✨ ${store.description || 'Welcome to my store!'} 👉 Click here to explore our exclusive catalog and order on WhatsApp today!">
     <meta name="twitter:image" content="${imageUrl}">
         `);
       }
